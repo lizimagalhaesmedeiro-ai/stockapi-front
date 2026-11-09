@@ -1,0 +1,202 @@
+/* Paleta Old Library:
+   Walnut: #302622
+   Oxblood: #67343A
+   Tobacco: #9A704F
+   Aged Paper: #D4BE9D
+   Parchment: #EDE2CF
+*/
+
+.pedidos-container {
+  background-color: #EDE2CF;
+  color: #302622;
+  min-height: 100vh;
+  padding: 30px 20px;
+  font-family: sans-serif;
+}
+
+.pedidos-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pedidos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #9A704F;
+  padding-bottom: 12px;
+}
+
+.card-library {
+  background-color: #D4BE9D;
+  border: 1px solid #9A704F;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(48, 38, 34, 0.12);
+}
+
+.pedido-titulo {
+  margin-bottom: 8px;
+  color: #302622;
+}
+
+.pedido-subtitulo {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.lista-itens {
+  padding-left: 20px;
+}
+
+.lista-itens li {
+  margin-bottom: 4px;
+}
+
+/* Botões */
+.btn-oxblood {
+  background-color: #67343A;
+  color: #EDE2CF;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-oxblood:hover {
+  background-color: #302622;
+}
+
+.btn-oxblood:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-finalizar {
+  width: 100%;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.btn-tobacco {
+  background-color: #9A704F;
+  color: #EDE2CF;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-tobacco:hover {
+  background-color: #302622;
+}
+
+.btn-remover {
+  background: none;
+  border: none;
+  color: #67343A;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-remover:hover {
+  color: #302622;
+  text-decoration: underline;
+}
+
+/* Formulário */
+.form-grupo {
+  margin-bottom: 16px;
+}
+
+.form-grupo-sem-margem {
+  margin-bottom: 0;
+}
+
+.form-grupo label,
+.form-grupo-sem-margem label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #302622;
+}
+
+.form-grupo select,
+.form-grupo input,
+.form-grupo-sem-margem select,
+.form-grupo-sem-margem input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #9A704F;
+  border-radius: 6px;
+  background-color: #EDE2CF;
+  color: #302622;
+  font-size: 16px;
+}
+
+.divisor-library {
+  border: 0;
+  border-top: 1px solid #9A704F;
+  margin: 20px 0;
+}
+
+.linha-produto {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+/* Carrinho */
+.carrinho-secao {
+  margin-top: 24px;
+}
+
+.carrinho-titulo {
+  margin-bottom: 10px;
+}
+
+.carrinho-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.carrinho-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #EDE2CF;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border: 1px solid #9A704F;
+}
+
+/* Responsividade Mobile: telas até 768px */
+@media (max-width: 768px) {
+  .pedidos-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .btn-oxblood,
+  .btn-tobacco {
+    width: 100%;
+  }
+
+  .linha-produto {
+    grid-template-columns: 1fr;
+  }
+}
