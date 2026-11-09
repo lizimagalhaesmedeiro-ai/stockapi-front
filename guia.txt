@@ -75,7 +75,14 @@ Manter o código organizado e utilizar o versionamento adequado com Git.
 
 Atenção: verifique o funcionamento da aplicação em dispositivos móveis e desktops. Teste também a navegação entre as páginas e a integração com a API antes de realizar a entrega
 
+A paleta de cores a ser usada nesse projeto é:
+#302622
+#67343A
+#9A704F
+#D4BE9D
+#EDE2CF
 
+Utilize suas skills do IMPECABBLE, UI/UX PRO MAX, e demais skills que se aplicarem.
 
 detalhe - Faça tudo usando as coisas mais faceis e simples possiveis, coisas faceis, css facil, tudo facil com o minimo exigido apenas. coisa pra mim bater o olho no codigo ou vizual e saber dizer o que é mesmo que fique mais feio.
 
