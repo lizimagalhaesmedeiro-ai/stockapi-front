@@ -1,0 +1,83 @@
+\📦 Atividade – Desenvolvimento de Aplicação para Controle de Estoque (4º Bimestre)
+Você deverá desenvolver uma aplicação web responsiva para o controle de estoque de uma loja, utilizando os conceitos de desenvolvimento Front-End estudados durante as aulas.
+
+📱💻 1. Requisitos de Responsividade
+A aplicação deverá se adaptar adequadamente aos seguintes dispositivos:
+
+Mobile: telas com largura de até 768 px.
+
+Desktop: telas com largura a partir de 769 px.
+
+O layout deverá oferecer uma boa experiência de uso em ambos os contextos.
+
+🧩 2. Componentes Obrigatórios
+Header
+O cabeçalho deverá possuir um menu de navegação organizado por categorias, contemplando as seguintes seções e ações:
+
+Categorias
+
+Produtos
+
+Clientes
+
+Pedidos
+
+O menu poderá ser implementado no formato de sua preferência, como dropdown, menu hambúrguer, painel lateral (slide) ou abas, desde que seja responsivo e funcional.
+
+Observação: cada pedido possui itens de pedido, compostos por produto e quantidade.
+
+📄 3. Páginas Obrigatórias
+A aplicação deverá possuir, no mínimo, as seguintes páginas:
+
+Home: deverá apresentar o nome dos integrantes da dupla.
+
+Listar Pedidos: deverá exibir dinamicamente os pedidos cadastrados.
+
+Criar Pedido: deverá permitir selecionar um cliente e adicionar produtos com suas respectivas quantidades.
+
+As páginas deverão estar integradas à navegação da aplicação.
+
+🔗 4. Integração com a API
+Todos os dados deverão ser carregados dinamicamente por meio de requisições Fetch API, utilizando a API disponibilizada na aplicação de referência.
+
+Aplicação de referência:
+https://stock.dev.vilhena.ifro.edu.br/
+
+API de referência:
+https://stock.dev.vilhena.ifro.edu.br/api
+
+Utilize as rotas adequadas, conforme a documentação pública do sistema:
+
+/categorias
+
+/produtos
+
+/clientes
+
+/pedidos
+
+/itens_pedido
+
+As informações deverão ser obtidas da API, evitando a utilização de dados fixos para representar os registros cadastrados no sistema.
+
+🎯 5. Objetivos da Atividade
+Aplicar renderização dinâmica por meio do consumo de uma API.
+
+Organizar páginas e implementar a navegação entre elas.
+
+Desenvolver a aplicação utilizando componentização.
+
+Criar um layout responsivo, organizado e intuitivo.
+
+Aplicar requisições HTTP para consultar e manipular dados.
+
+Manter o código organizado e utilizar o versionamento adequado com Git.
+
+Atenção: verifique o funcionamento da aplicação em dispositivos móveis e desktops. Teste também a navegação entre as páginas e a integração com a API antes de realizar a entrega
+
+
+
+detalhe - Faça tudo usando as coisas mais faceis e simples possiveis, coisas faceis, css facil, tudo facil com o minimo exigido apenas. coisa pra mim bater o olho no codigo ou vizual e saber dizer o que é mesmo que fique mais feio.
+
+Não coloque NENHUM comentario no codigo, em lugar nenhum. quando terminar tudo, devise mais uma vez se todos os criterios aqui estão sendo seguidos á RISCA.
+
