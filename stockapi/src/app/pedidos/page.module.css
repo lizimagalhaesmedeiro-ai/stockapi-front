@@ -1,0 +1,237 @@
+
+.pagina {
+  min-height: 75vh;
+  padding-top: 35px;
+  padding-bottom: 50px;
+}
+
+.pagina-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.sobre-titulo {
+  color: #a45d53;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.titulo-pagina {
+  color: #49332f;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.texto-pagina {
+  color: #887b77;
+  font-size: 14px;
+}
+
+.acoes-topo {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primario {
+  background: #68443e;
+  color: white;
+}
+
+.btn-primario:hover {
+  background: #4e332e;
+}
+
+.btn-secundario {
+  background: white;
+  color: #68443e;
+  border: 1px solid #d9c7c1;
+}
+
+.btn-secundario:hover {
+  background: #f5eeeb;
+}
+
+.grid-quatro {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 17px;
+}
+
+.card-stat {
+  padding: 22px;
+  background: white;
+  border: 1px solid #eee5e2;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(60, 35, 30, 0.04);
+}
+
+.stat-titulo {
+  display: block;
+  color: #887b77;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.stat-valor {
+  color: #49332f;
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.painel {
+  padding: 24px;
+  background: white;
+  border: 1px solid #eee5e2;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(60, 35, 30, 0.04);
+}
+
+.titulo-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.titulo-painel {
+  color: #49332f;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.campo-busca {
+  width: 100%;
+  padding: 13px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #e5d9d5;
+  border-radius: 8px;
+  outline: none;
+  color: #49332f;
+  font-size: 14px;
+}
+
+.campo-busca:focus {
+  border-color: #ad6258;
+  box-shadow: 0 0 0 3px rgba(173, 98, 88, 0.12);
+}
+
+.tabela-rolagem {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+}
+
+.tabela th {
+  padding: 15px;
+  background: #f7f1ef;
+  color: #725a54;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.tabela td {
+  padding: 16px 15px;
+  border-bottom: 1px solid #f0e9e6;
+  color: #554743;
+  font-size: 14px;
+}
+
+.tabela tbody tr:hover {
+  background: #fdfaf9;
+}
+
+.aviso {
+  padding: 35px 15px;
+  color: #887b77;
+  text-align: center;
+  font-size: 14px;
+}
+
+.mensagem-erro {
+  padding: 13px;
+  margin: 12px 0;
+  border-radius: 8px;
+  background: #fde7e5;
+  color: #b4473f;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .pagina {
+    padding: 25px 4%;
+  }
+
+  .pagina-topo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .titulo-pagina {
+    font-size: 26px;
+  }
+
+  .acoes-topo {
+    width: 100%;
+  }
+
+  .acoes-topo .btn {
+    flex: 1;
+  }
+
+  .grid-quatro {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card-stat {
+    padding: 16px;
+  }
+
+  .stat-valor {
+    font-size: 23px;
+  }
+
+  .painel {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .grid-quatro {
+    grid-template-columns: 1fr;
+  }
+}
