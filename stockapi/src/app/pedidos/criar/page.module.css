@@ -1,0 +1,279 @@
+
+.pagina {
+  min-height: 75vh;
+  padding-top: 35px;
+  padding-bottom: 50px;
+}
+
+.pagina-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.sobre-titulo {
+  color: #a45d53;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.titulo-pagina {
+  color: #49332f;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.texto-pagina {
+  color: #887b77;
+  font-size: 14px;
+}
+
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primario {
+  width: 100%;
+  background: #68443e;
+  color: white;
+}
+
+.btn-primario:hover {
+  background: #4e332e;
+}
+
+.btn-secundario {
+  background: white;
+  color: #68443e;
+  border: 1px solid #d9c7c1;
+}
+
+.btn-secundario:hover {
+  background: #f5eeeb;
+}
+
+.criar-pedido-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.painel {
+  padding: 25px;
+  background: white;
+  border: 1px solid #eee5e2;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(60, 35, 30, 0.04);
+}
+
+.titulo-painel {
+  color: #49332f;
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formulario label {
+  color: #604b45;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.formulario input,
+.formulario select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #e5d9d5;
+  border-radius: 8px;
+  background: white;
+  color: #49332f;
+  font-size: 14px;
+  outline: none;
+}
+
+.formulario input:focus,
+.formulario select:focus {
+  border-color: #ad6258;
+  box-shadow: 0 0 0 3px rgba(173, 98, 88, 0.12);
+}
+
+.linha-divisoria {
+  height: 1px;
+  background: #eee5e2;
+  margin: 15px 0;
+}
+
+.contador {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 20px;
+  background: #f5e9e6;
+  color: #96594f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.lista-registros {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.registro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0e9e6;
+}
+
+.registro > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.registro strong {
+  color: #49332f;
+  font-size: 14px;
+}
+
+.registro small {
+  color: #887b77;
+  font-size: 12px;
+}
+
+.btn-remover {
+  align-self: flex-end;
+  padding: 5px 0;
+  border: none;
+  background: transparent;
+  color: #b4473f;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-remover:hover {
+  text-decoration: underline;
+}
+
+.total-pedido {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 15px;
+  border-top: 1px solid #eee5e2;
+  color: #49332f;
+}
+
+.total-pedido span {
+  color: #887b77;
+  font-size: 15px;
+}
+
+.total-pedido strong {
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.aviso {
+  padding: 35px 15px;
+  color: #887b77;
+  text-align: center;
+  font-size: 14px;
+}
+
+.mensagem-erro,
+.mensagem-sucesso {
+  padding: 13px;
+  margin-top: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.mensagem-erro {
+  background: #fde7e5;
+  color: #b4473f;
+}
+
+.mensagem-sucesso {
+  background: #e6f4e9;
+  color: #287b49;
+}
+
+@media (max-width: 768px) {
+  .pagina {
+    padding: 25px 4%;
+  }
+
+  .pagina-topo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .titulo-pagina {
+    font-size: 26px;
+  }
+
+  .criar-pedido-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .painel {
+    padding: 18px;
+  }
+
+  .registro {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .registro {
+    flex-direction: column;
+  }
+
+  .registro > div:last-child {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .btn-remover {
+    align-self: flex-start;
+  }
+}

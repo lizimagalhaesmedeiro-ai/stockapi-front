@@ -2,14 +2,14 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1rem;
-  color: #302622; /* walnut */
+  color: #302622;
 }
 
 .titulo {
   font-size: 1.65rem;
-  color: #302622; /* walnut */
+  color: #302622;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #D4BE9D; /* aged paper */
+  border-bottom: 2px solid #D4BE9D;
   padding-bottom: 0.5rem;
 }
 
@@ -18,19 +18,18 @@
   gap: 2rem;
 }
 
-/* Formulário */
 .cardForm {
-  background-color: #EDE2CF; /* parchment */
+  background-color: #EDE2CF;
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 3px 10px rgba(48, 38, 34, 0.12);
-  border: 1px solid #D4BE9D; /* aged paper */
+  border: 1px solid #D4BE9D;
 }
 
 .cardForm h2,
 .secaoLista h2 {
   font-size: 1.2rem;
-  color: #67343A; /* oxblood */
+  color: #67343A;
   margin-bottom: 1rem;
 }
 
@@ -49,34 +48,34 @@
 .campo label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #302622; /* walnut */
+  color: #302622;
 }
 
 .campo input,
 .campo select {
   padding: 0.65rem;
-  border: 1px solid #9A704F; /* tobacco */
+  border: 1px solid #9A704F;
   border-radius: 6px;
   font-size: 0.95rem;
   background-color: #faf6ef;
-  color: #302622; /* walnut */
+  color: #302622;
 }
 
 .campo input::placeholder {
-  color: #9A704F; /* tobacco */
+  color: #9A704F;
   opacity: 0.75;
 }
 
 .campo input:focus,
 .campo select:focus {
   outline: none;
-  border-color: #67343A; /* oxblood */
+  border-color: #67343A;
   box-shadow: 0 0 0 2px rgba(103, 52, 58, 0.2);
 }
 
 .btnSalvar {
-  background-color: #67343A; /* oxblood */
-  color: #EDE2CF; /* parchment */
+  background-color: #67343A;
+  color: #EDE2CF;
   border: none;
   padding: 0.75rem;
   border-radius: 6px;
@@ -86,7 +85,7 @@
 }
 
 .btnSalvar:hover:not(:disabled) {
-  background-color: #302622; /* walnut */
+  background-color: #302622;
 }
 
 .btnSalvar:disabled {
@@ -97,11 +96,10 @@
 .mensagem {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #67343A; /* oxblood */
+  color: #67343A;
   margin-top: 0.25rem;
 }
 
-/* Listagem */
 .cabecalhoLista {
   display: flex;
   justify-content: space-between;
@@ -110,9 +108,9 @@
 }
 
 .btnAtualizar {
-  background-color: #D4BE9D; /* aged paper */
-  color: #302622; /* walnut */
-  border: 1px solid #9A704F; /* tobacco */
+  background-color: #D4BE9D;
+  color: #302622;
+  border: 1px solid #9A704F;
   padding: 0.5rem 0.9rem;
   border-radius: 6px;
   font-weight: 600;
@@ -121,12 +119,12 @@
 }
 
 .btnAtualizar:hover {
-  background-color: #9A704F; /* tobacco */
-  color: #EDE2CF; /* parchment */
+  background-color: #9A704F;
+  color: #EDE2CF;
 }
 
 .erro {
-  color: #67343A; /* oxblood */
+  color: #67343A;
   background-color: #EDE2CF;
   border: 1px solid #67343A;
   padding: 0.75rem;
@@ -140,9 +138,9 @@
 }
 
 .produtoCard {
-  background-color: #EDE2CF; /* parchment */
-  border: 1px solid #D4BE9D; /* aged paper */
-  border-left: 5px solid #67343A; /* oxblood */
+  background-color: #EDE2CF;
+  border: 1px solid #D4BE9D;
+  border-left: 5px solid #67343A;
   border-radius: 8px;
   padding: 1.1rem;
   box-shadow: 0 2px 6px rgba(48, 38, 34, 0.08);
@@ -159,14 +157,14 @@
 
 .produtoCard h3 {
   font-size: 1.05rem;
-  color: #302622; /* walnut */
+  color: #302622;
   margin-bottom: 0.25rem;
 }
 
 .categoriaTag {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #9A704F; /* tobacco */
+  color: #9A704F;
 }
 
 .rodapeCard {
@@ -174,27 +172,23 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 0.6rem;
-  border-top: 1px solid #D4BE9D; /* aged paper */
+  border-top: 1px solid #D4BE9D;
 }
 
 .preco {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #67343A; /* oxblood */
+  color: #67343A;
 }
 
 .estoqueBadge {
-  background-color: #D4BE9D; /* aged paper */
-  color: #302622; /* walnut */
+  background-color: #D4BE9D;
+  color: #302622;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
 }
-
-/* ==========================================
-   RESPONSIVIDADE (Mobile <= 768px | Desktop >= 769px)
-   ========================================== */
 
 @media (max-width: 768px) {
   .conteudoGrid {

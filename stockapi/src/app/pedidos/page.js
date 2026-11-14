@@ -49,7 +49,7 @@ export default function PedidosPage() {
 
   function quantidadeItens(pedidoId) {
     return itens
-      .filter((item) => Number(item.pedido_id) === Number(pedidoId))
+      .filter((item) => Number(item.pedido_numero || item.pedido_id) === Number(pedidoId))
       .reduce((total, item) => total + Number(item.quantidade || 0), 0);
   }
 
