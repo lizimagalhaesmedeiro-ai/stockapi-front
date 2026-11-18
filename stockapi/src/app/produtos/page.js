@@ -1,215 +1,516 @@
-'use client';
+import { useEffect, useState } from "react";
+import "./produtos.css";
 
-import { useState, useEffect } from 'react';
-import Header from '@/components/Header';
-import styles from './produtos.module.css';
+const API = "https://stock.dev.vilhena.ifro.edu.br/api";
 
-const API_URL = 'https://stock.dev.vilhena.ifro.edu.br/api';
-
-export default function ProdutosPage() {
+function Produtos() {
+  // Estados da página
   const [produtos, setProdutos] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [busca, setBusca] = useState("");
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState('');
+  const [erro, setErro] = useState("");
+  const [mensagem, setMensagem] = useState("");
 
-  const [nome, setNome] = useState('');
-  const [preco, setPreco] = useState('');
-  const [estoque, setEstoque] = useState('');
-  const [categoriaId, setCategoriaId] = useState('');
-  const [salvando, setSalvando] = useState(false);
-  const [mensagem, setMensagem] = useState('');
+  // Controle do formulário
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [produtoEditando, setProdutoEditando] = useState(null);
 
-  useEffect(() => {
-    carregarDados();
-  }, []);
+  // Dados do formulário
+  const [formulario, setFormulario] = useState({
+    nome: "",
+    descricao: "",
+    preco: "",
+    quantidade_estoque: "0",
+    categoria_id: ""
+  });
 
+  // Função para buscar os dados da API
   async function carregarDados() {
-    setCarregando(true);
-    setErro('');
     try {
-      const [resProdutos, resCategorias] = await Promise.all([
-        fetch(`${API_URL}/produtos`),
-        fetch(`${API_URL}/categorias`)
-      ]);
+      setCarregando(true);
+      setErro("");
 
-      if (!resProdutos.ok || !resCategorias.ok) {
-        throw new Error('Falha ao buscar dados da API');
+      const [respostaProdutos, respostaCategorias] =
+        await Promise.all([
+          fetch(`${API}/produtos`),
+          fetch(`${API}/categorias`)
+        ]);
+
+      if (!respostaProdutos.ok || !respostaCategorias.ok) {
+        throw new Error("Erro ao buscar informações da API.");
       }
 
-      const dadosProdutos = await resProdutos.json();
-      const dadosCategorias = await resCategorias.json();
+      const dadosProdutos = await respostaProdutos.json();
+      const dadosCategorias = await respostaCategorias.json();
 
-      setProdutos(Array.isArray(dadosProdutos) ? dadosProdutos : []);
-      setCategorias(Array.isArray(dadosCategorias) ? dadosCategorias : []);
-    } catch (err) {
-      setErro('Não foi possível carregar os produtos. Verifique a conexão com a API.');
+      setProdutos(dadosProdutos);
+      setCategorias(dadosCategorias);
+
+    } catch (error) {
+      setErro(error.message);
     } finally {
       setCarregando(false);
     }
   }
 
-  function obterNomeCategoria(id) {
-    const cat = categorias.find((c) => Number(c.id) === Number(id));
-    return cat ? (cat.nome || cat.descricao) : `Categoria #${id || 'N/A'}`;
+  // Carrega os dados quando a página abre
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  // Atualiza os campos do formulário
+  function atualizarFormulario(evento) {
+    const { name, value } = evento.target;
+
+    setFormulario({
+      ...formulario,
+      [name]: value
+    });
   }
 
-  async function handleCadastrar(e) {
-    e.preventDefault();
-    setSalvando(true);
-    setMensagem('');
+  // Limpa o formulário
+  function limparFormulario() {
+    setFormulario({
+      nome: "",
+      descricao: "",
+      preco: "",
+      quantidade_estoque: "0",
+      categoria_id: ""
+    });
 
-    const novoProduto = {
-      nome: nome.trim(),
-      preco: parseFloat(preco),
-      quantidade_estoque: parseInt(estoque, 10),
-      estoque: parseInt(estoque, 10),
-      categoria_id: parseInt(categoriaId, 10)
+    setProdutoEditando(null);
+    setMostrarFormulario(false);
+  }
+
+  // Abre o formulário para cadastrar
+  function novoProduto() {
+    limparFormulario();
+    setMostrarFormulario(true);
+  }
+
+  // Abre o formulário para editar
+  function editarProduto(produto) {
+    setProdutoEditando(produto);
+
+    setFormulario({
+      nome: produto.nome || "",
+      descricao: produto.descricao || "",
+      preco: produto.preco,
+      quantidade_estoque: produto.quantidade_estoque ?? 0,
+      categoria_id: produto.categoria_id ?? ""
+    });
+
+    setMostrarFormulario(true);
+  }
+
+  // Salva um produto novo ou atualizado
+  async function salvarProduto(evento) {
+    evento.preventDefault();
+
+    const dados = {
+      nome: formulario.nome.trim(),
+      descricao: formulario.descricao,
+      preco: Number(formulario.preco),
+      quantidade_estoque: Number(formulario.quantidade_estoque),
+      categoria_id: formulario.categoria_id
+        ? Number(formulario.categoria_id)
+        : null
     };
 
-    try {
-      const response = await fetch(`${API_URL}/produtos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(novoProduto)
-      });
+    if (!dados.nome || dados.preco <= 0) {
+      alert("Informe um nome e um preço maior que zero.");
+      return;
+    }
 
-      if (!response.ok) {
-        throw new Error('Erro ao cadastrar o produto');
+    if (
+      !Number.isInteger(dados.quantidade_estoque) ||
+      dados.quantidade_estoque < 0
+    ) {
+      alert("Informe uma quantidade inteira igual ou maior que zero.");
+      return;
+    }
+
+    try {
+      const editando = produtoEditando !== null;
+
+      const resposta = await fetch(
+        editando
+          ? `API/produtos/{produtoEditando.id}`
+          : `${API}/produtos`,
+        {
+          method: editando ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dados)
+        }
+      );
+
+      if (!resposta.ok) {
+        const resultado = await resposta.json();
+        throw new Error(
+          resultado.erro || "Não foi possível salvar o produto."
+        );
       }
 
-      setMensagem('Produto cadastrado com sucesso!');
-      setNome('');
-      setPreco('');
-      setEstoque('');
-      setCategoriaId('');
+      limparFormulario();
+
+      setMensagem(
+        editando
+          ? "Produto atualizado com sucesso!"
+          : "Produto cadastrado com sucesso!"
+      );
 
       await carregarDados();
-    } catch (err) {
-      setMensagem('Erro ao cadastrar produto. Tente novamente.');
-    } finally {
-      setSalvando(false);
+
+    } catch (error) {
+      alert(error.message);
     }
   }
 
-  return (
-    <>
-      <Header />
-      <main className={styles.container}>
-        <h1 className={styles.titulo}>Gerenciamento de Produtos</h1>
+  // Exclui um produto
+  async function excluirProduto(id) {
+    const confirmar = window.confirm(
+      "Tem certeza que deseja excluir este produto?"
+    );
 
-        <div className={styles.conteudoGrid}>
-          <section className={styles.cardForm}>
-            <h2>Novo Produto</h2>
-            <form onSubmit={handleCadastrar} className={styles.form}>
-              <div className={styles.campo}>
-                <label htmlFor="nome">Nome do Produto</label>
+    if (!confirmar) return;
+
+    try {
+      const resposta = await fetch(`API/produtos/{id}`, {
+        method: "DELETE"
+      });
+
+      if (!resposta.ok) {
+        const resultado = await resposta.json();
+        throw new Error(
+          resultado.erro || "Não foi possível excluir o produto."
+        );
+      }
+
+      setMensagem("Produto excluído com sucesso!");
+
+      await carregarDados();
+
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  // Pesquisa produtos pelo nome
+  const produtosFiltrados = produtos.filter((produto) =>
+    produto.nome.toLowerCase().includes(busca.toLowerCase())
+  );
+
+  // Formata o preço
+  function formatarPreco(preco) {
+    return Number(preco).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+
+  // Encontra o nome da categoria
+  function nomeCategoria(id) {
+    const categoria = categorias.find(
+      (item) => item.id === id
+    );
+
+    return categoria ? categoria.nome : "Sem categoria";
+  }
+
+  return (
+    <main className="produtos-container">
+
+      {/* Cabeçalho da página */}
+      <section className="produtos-banner">
+        <h1>Gerenciamento de Produtos</h1>
+
+        <p>
+          Cadastre, consulte e organize os produtos do estoque.
+        </p>
+      </section>
+
+      {/* Conteúdo principal */}
+      <section className="produtos-conteudo">
+
+        <div className="produtos-titulo">
+          <h2>Produtos em Estoque</h2>
+
+          <p>
+            Visualize e gerencie os produtos cadastrados no sistema.
+          </p>
+        </div>
+
+        {/* Resumo dos produtos */}
+        <div className="resumo-produtos">
+
+          <div className="card-produto">
+            <span>TOTAL DE PRODUTOS</span>
+            <strong>{produtos.length}</strong>
+          </div>
+
+          <div className="card-produto">
+            <span>CATEGORIAS</span>
+            <strong>{categorias.length}</strong>
+          </div>
+
+          <div className="card-produto">
+            <span>RESULTADOS</span>
+            <strong>{produtosFiltrados.length}</strong>
+          </div>
+
+        </div>
+
+        {/* Pesquisa e cadastro */}
+        <div className="produtos-acoes">
+
+          <input
+            type="text"
+            placeholder="Pesquisar produto pelo nome..."
+            value={busca}
+            onChange={(evento) => setBusca(evento.target.value)}
+          />
+
+          <button
+            className="botao-novo"
+            onClick={novoProduto}
+          >
+            + Novo Produto
+          </button>
+
+        </div>
+
+        {/* Mensagens */}
+        {mensagem && (
+          <div className="mensagem-sucesso">
+            {mensagem}
+            <button
+              type="button"
+              onClick={() => setMensagem("")}
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {erro && (
+          <div className="mensagem-erro">
+            {erro}
+            <button
+              type="button"
+              onClick={carregarDados}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
+        {/* Formulário */}
+        {mostrarFormulario && (
+          <form
+            className="produto-formulario"
+            onSubmit={salvarProduto}
+          >
+
+            <h3>
+              {produtoEditando
+                ? "Editar Produto"
+                : "Cadastrar Novo Produto"}
+            </h3>
+
+            <div className="campo-formulario">
+              <label>Nome do produto *</label>
+
+              <input
+                type="text"
+                name="nome"
+                placeholder="Digite o nome do produto"
+                value={formulario.nome}
+                onChange={atualizarFormulario}
+                maxLength={100}
+                required
+              />
+            </div>
+
+            <div className="campo-formulario">
+              <label>Descrição</label>
+
+              <textarea
+                name="descricao"
+                placeholder="Descreva o produto..."
+                value={formulario.descricao}
+                onChange={atualizarFormulario}
+              />
+            </div>
+
+            <div className="formulario-linha">
+
+              <div className="campo-formulario">
+                <label>Preço (R$) *</label>
+
                 <input
-                  id="nome"
-                  type="text"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  placeholder="Ex: Mouse Sem Fio"
+                  type="number"
+                  name="preco"
+                  placeholder="0,00"
+                  min="0.01"
+                  step="0.01"
+                  value={formulario.preco}
+                  onChange={atualizarFormulario}
                   required
                 />
               </div>
 
-              <div className={styles.linhaDupla}>
-                <div className={styles.campo}>
-                  <label htmlFor="preco">Preço (R$)</label>
-                  <input
-                    id="preco"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={preco}
-                    onChange={(e) => setPreco(e.target.value)}
-                    placeholder="0.00"
-                    required
-                  />
-                </div>
+              <div className="campo-formulario">
+                <label>Quantidade em estoque</label>
 
-                <div className={styles.campo}>
-                  <label htmlFor="estoque">Estoque</label>
-                  <input
-                    id="estoque"
-                    type="number"
-                    min="0"
-                    value={estoque}
-                    onChange={(e) => setEstoque(e.target.value)}
-                    placeholder="0"
-                    required
-                  />
-                </div>
+                <input
+                  type="number"
+                  name="quantidade_estoque"
+                  min="0"
+                  step="1"
+                  value={formulario.quantidade_estoque}
+                  onChange={atualizarFormulario}
+                />
               </div>
 
-              <div className={styles.campo}>
-                <label htmlFor="categoria">Categoria</label>
-                <select
-                  id="categoria"
-                  value={categoriaId}
-                  onChange={(e) => setCategoriaId(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione uma categoria...</option>
-                  {categorias.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.nome || cat.descricao || `Categoria ${cat.id}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button type="submit" className={styles.btnSalvar} disabled={salvando}>
-                {salvando ? 'Salvando...' : 'Cadastrar Produto'}
-              </button>
-
-              {mensagem && <p className={styles.mensagem}>{mensagem}</p>}
-            </form>
-          </section>
-
-          <section className={styles.secaoLista}>
-            <div className={styles.cabecalhoLista}>
-              <h2>Produtos Cadastrados ({produtos.length})</h2>
-              <button onClick={carregarDados} className={styles.btnAtualizar} type="button">
-                Atualizar
-              </button>
             </div>
 
-            {carregando && <p>Carregando produtos da API...</p>}
-            {erro && <p className={styles.erro}>{erro}</p>}
+            <div className="campo-formulario">
+              <label>Categoria</label>
 
-            {!carregando && !erro && produtos.length === 0 && (
-              <p>Nenhum produto encontrado.</p>
-            )}
+              <select
+                name="categoria_id"
+                value={formulario.categoria_id}
+                onChange={atualizarFormulario}
+              >
+                <option value="">Sem categoria</option>
 
-            <div className={styles.listaCards}>
-              {produtos.map((prod) => (
-                <article key={prod.id} className={styles.produtoCard}>
-                  <div>
-                    <h3>{prod.nome}</h3>
-                    <p className={styles.categoriaTag}>
-                      {obterNomeCategoria(prod.categoria_id)}
-                    </p>
-                  </div>
-                  <div className={styles.rodapeCard}>
-                    <span className={styles.preco}>
-                      {Number(prod.preco || 0).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                      })}
-                    </span>
-                    <span className={styles.estoqueBadge}>
-                      Estoque: {prod.quantidade_estoque ?? prod.estoque ?? prod.quantidade ?? 0} un.
-                    </span>
-                  </div>
-                </article>
-              ))}
+                {categorias.map((categoria) => (
+                  <option
+                    key={categoria.id}
+                    value={categoria.id}
+                  >
+                    {categoria.nome}
+                  </option>
+                ))}
+              </select>
             </div>
-          </section>
+
+            <div className="formulario-botoes">
+
+              <button
+                type="submit"
+                className="botao-salvar"
+              >
+                Salvar Produto
+              </button>
+
+              <button
+                type="button"
+                className="botao-cancelar"
+                onClick={limparFormulario}
+              >
+                Cancelar
+              </button>
+
+            </div>
+
+          </form>
+        )}
+
+        {/* Tabela de produtos */}
+        <div className="tabela-titulo">
+          <h2>Lista de Produtos</h2>
         </div>
-      </main>
-    </>
+
+        {carregando ? (
+          <p className="mensagem-vazia">
+            Carregando produtos...
+          </p>
+        ) : produtosFiltrados.length === 0 ? (
+          <p className="mensagem-vazia">
+            Nenhum produto encontrado.
+          </p>
+        ) : (
+
+          <div className="tabela-responsiva">
+
+            <table className="tabela-produtos">
+
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Produto</th>
+                  <th>Preço Unitário</th>
+                  <th>Quantidade</th>
+                  <th>Categoria</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                {produtosFiltrados.map((produto) => (
+
+                  <tr key={produto.id}>
+
+                    <td>{produto.id}</td>
+
+                    <td className="nome-produto">
+                      {produto.nome}
+                    </td>
+
+                    <td>
+                      {formatarPreco(produto.preco)}
+                    </td>
+
+                    <td>
+                      {produto.quantidade_estoque ?? 0} un.
+                    </td>
+
+                    <td>
+                      {nomeCategoria(produto.categoria_id)}
+                    </td>
+
+                    <td>
+                      <div className="acoes-tabela">
+
+                        <button
+                          className="botao-editar"
+                          onClick={() => editarProduto(produto)}
+                        >
+                          Editar
+                        </button>
+
+                        <button
+                          className="botao-excluir"
+                          onClick={() => excluirProduto(produto.id)}
+                        >
+                          Excluir
+                        </button>
+
+                      </div>
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        )}
+
+      </section>
+
+    </main>
   );
 }
+
+export default Produtos;
+
