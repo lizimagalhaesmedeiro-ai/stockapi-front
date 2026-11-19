@@ -1,52 +1,54 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import "./produtos.css";
+import Link from "next/link";
+import styles from "./produtos.module.css";
 
 const API = "https://stock.dev.vilhena.ifro.edu.br/api";
 
-function Produtos() {
-  // Estados da página
+const formularioInicial = {
+  nome: "",
+  preco: "",
+  descricao: "",
+  quantidade_estoque: "",
+  categoria_id: ""
+};
+
+function extrairLista(dados) {
+  if (Array.isArray(dados)) return dados;
+  if (Array.isArray(dados?.data)) return dados.data;
+  return [];
+}
+
+export default function Produtos() {
   const [produtos, setProdutos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [busca, setBusca] = useState("");
-  const [carregando, setCarregando] = useState(true);
+  const [editando, setEditando] = useState(null);
+  const [mostrarForm, setMostrarForm] = useState(false);
   const [erro, setErro] = useState("");
-  const [mensagem, setMensagem] = useState("");
+  const [carregando, setCarregando] = useState(true);
+  const [form, setForm] = useState(formularioInicial);
 
-  // Controle do formulário
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [produtoEditando, setProdutoEditando] = useState(null);
-
-  // Dados do formulário
-  const [formulario, setFormulario] = useState({
-    nome: "",
-    descricao: "",
-    preco: "",
-    quantidade_estoque: "0",
-    categoria_id: ""
-  });
-
-  // Função para buscar os dados da API
   async function carregarDados() {
     try {
       setCarregando(true);
       setErro("");
 
-      const [respostaProdutos, respostaCategorias] =
-        await Promise.all([
-          fetch(`${API}/produtos`),
-          fetch(`${API}/categorias`)
-        ]);
+      const [resProdutos, resCategorias] = await Promise.all([
+        fetch(`${API}/produtos`),
+        fetch(`${API}/categorias`)
+      ]);
 
-      if (!respostaProdutos.ok || !respostaCategorias.ok) {
-        throw new Error("Erro ao buscar informações da API.");
+      if (!resProdutos.ok || !resCategorias.ok) {
+        throw new Error("Não foi possível carregar os dados.");
       }
 
-      const dadosProdutos = await respostaProdutos.json();
-      const dadosCategorias = await respostaCategorias.json();
+      const dadosProdutos = await resProdutos.json();
+      const dadosCategorias = await resCategorias.json();
 
-      setProdutos(dadosProdutos);
-      setCategorias(dadosCategorias);
-
+      setProdutos(extrairLista(dadosProdutos));
+      setCategorias(extrairLista(dadosCategorias));
     } catch (error) {
       setErro(error.message);
     } finally {
@@ -54,463 +56,309 @@ function Produtos() {
     }
   }
 
-  // Carrega os dados quando a página abre
   useEffect(() => {
     carregarDados();
   }, []);
 
-  // Atualiza os campos do formulário
-  function atualizarFormulario(evento) {
-    const { name, value } = evento.target;
-
-    setFormulario({
-      ...formulario,
-      [name]: value
-    });
+  function alterarCampo(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // Limpa o formulário
-  function limparFormulario() {
-    setFormulario({
-      nome: "",
-      descricao: "",
-      preco: "",
-      quantidade_estoque: "0",
-      categoria_id: ""
-    });
-
-    setProdutoEditando(null);
-    setMostrarFormulario(false);
+  function abrirCadastro() {
+    setErro("");
+    setEditando(null);
+    setForm(formularioInicial);
+    setMostrarForm(true);
   }
 
-  // Abre o formulário para cadastrar
-  function novoProduto() {
-    limparFormulario();
-    setMostrarFormulario(true);
-  }
-
-  // Abre o formulário para editar
-  function editarProduto(produto) {
-    setProdutoEditando(produto);
-
-    setFormulario({
+  function abrirEdicao(produto) {
+    setErro("");
+    setEditando(produto.id);
+    setForm({
       nome: produto.nome || "",
+      preco: produto.preco ?? "",
       descricao: produto.descricao || "",
-      preco: produto.preco,
-      quantidade_estoque: produto.quantidade_estoque ?? 0,
+      quantidade_estoque: produto.quantidade_estoque ?? "",
       categoria_id: produto.categoria_id ?? ""
     });
-
-    setMostrarFormulario(true);
+    setMostrarForm(true);
   }
 
-  // Salva um produto novo ou atualizado
-  async function salvarProduto(evento) {
-    evento.preventDefault();
+  async function salvarProduto(e) {
+    e.preventDefault();
+    setErro("");
 
     const dados = {
-      nome: formulario.nome.trim(),
-      descricao: formulario.descricao,
-      preco: Number(formulario.preco),
-      quantidade_estoque: Number(formulario.quantidade_estoque),
-      categoria_id: formulario.categoria_id
-        ? Number(formulario.categoria_id)
-        : null
+      ...form,
+      preco: Number(String(form.preco).replace(",", ".")),
+      quantidade_estoque: Number(form.quantidade_estoque || 0),
+      categoria_id: form.categoria_id ? Number(form.categoria_id) : null
     };
 
-    if (!dados.nome || dados.preco <= 0) {
-      alert("Informe um nome e um preço maior que zero.");
-      return;
-    }
-
-    if (
-      !Number.isInteger(dados.quantidade_estoque) ||
-      dados.quantidade_estoque < 0
-    ) {
-      alert("Informe uma quantidade inteira igual ou maior que zero.");
-      return;
-    }
-
     try {
-      const editando = produtoEditando !== null;
-
       const resposta = await fetch(
-        editando
-          ? `API/produtos/{produtoEditando.id}`
-          : `${API}/produtos`,
+        editando ? `${API}/produtos/${editando}` : `${API}/produtos`,
         {
           method: editando ? "PATCH" : "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dados)
         }
       );
 
       if (!resposta.ok) {
-        const resultado = await resposta.json();
+        const resultado = await resposta.json().catch(() => ({}));
         throw new Error(
-          resultado.erro || "Não foi possível salvar o produto."
+          resultado.erro || `Erro ao salvar produto (${resposta.status}).`
         );
       }
 
-      limparFormulario();
-
-      setMensagem(
-        editando
-          ? "Produto atualizado com sucesso!"
-          : "Produto cadastrado com sucesso!"
-      );
-
-      await carregarDados();
-
+      setMostrarForm(false);
+      setForm(formularioInicial);
+      setEditando(null);
+      carregarDados();
     } catch (error) {
-      alert(error.message);
+      setErro(error.message);
     }
   }
 
-  // Exclui um produto
   async function excluirProduto(id) {
-    const confirmar = window.confirm(
-      "Tem certeza que deseja excluir este produto?"
-    );
-
-    if (!confirmar) return;
+    if (!window.confirm("Deseja realmente excluir este produto?")) return;
+    setErro("");
 
     try {
-      const resposta = await fetch(`API/produtos/{id}`, {
+      const resposta = await fetch(`${API}/produtos/${id}`, {
         method: "DELETE"
       });
 
       if (!resposta.ok) {
-        const resultado = await resposta.json();
-        throw new Error(
-          resultado.erro || "Não foi possível excluir o produto."
-        );
+        throw new Error(`Não foi possível excluir o produto (${resposta.status}).`);
       }
-
-      setMensagem("Produto excluído com sucesso!");
-
-      await carregarDados();
-
+      carregarDados();
     } catch (error) {
-      alert(error.message);
+      setErro(error.message);
     }
   }
 
-  // Pesquisa produtos pelo nome
   const produtosFiltrados = produtos.filter((produto) =>
-    produto.nome.toLowerCase().includes(busca.toLowerCase())
+    (produto.nome || "").toLowerCase().includes(busca.toLowerCase())
   );
 
-  // Formata o preço
-  function formatarPreco(preco) {
-    return Number(preco).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    });
-  }
-
-  // Encontra o nome da categoria
   function nomeCategoria(id) {
-    const categoria = categorias.find(
-      (item) => item.id === id
-    );
-
+    const categoria = categorias.find((item) => Number(item.id) === Number(id));
     return categoria ? categoria.nome : "Sem categoria";
   }
 
+  const totalEstoque = produtos.reduce(
+    (total, item) => total + Number(item.quantidade_estoque || 0),
+    0
+  );
+
   return (
-    <main className="produtos-container">
+    <>
+    <header className={styles["menu-header"]}>
+      <nav className={styles["menu-nav"]}>
+        <Link href="/" className={styles["menu-titulo"]}>
+          Painel de controle da Stockapi
+        </Link>
 
-      {/* Cabeçalho da página */}
-      <section className="produtos-banner">
-        <h1>Gerenciamento de Produtos</h1>
+        <ul className={styles["menu-links"]}>
+          <li><Link href="/">Home</Link></li>
+          <li><Link href="/categorias">Categorias</Link></li>
+          <li><Link href="/produtos">Produtos</Link></li>
+          <li><Link href="/clientes">Clientes</Link></li>
+          <li className={styles["menu-dropdown"]}>
+            <Link href="/pedidos">Pedidos <small>▾</small></Link>
+            <ul className={styles["menu-submenu"]}>
+              <li><Link href="/pedidos">Pedidos</Link></li>
+              <li><Link href="/criarPedido">Criar pedido</Link></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-        <p>
-          Cadastre, consulte e organize os produtos do estoque.
-        </p>
+    <main className={styles["products-page"]}>
+      <section className={styles["products-heading"]}>
+        <div>
+          <span className={styles["products-subtitle"]}>GERENCIAMENTO DE ESTOQUE</span>
+          <h1>Produtos</h1>
+          <p>Consulte e organize os produtos cadastrados.</p>
+        </div>
+
+        <button className={styles["product-add"]} onClick={abrirCadastro}>
+          + Novo produto
+        </button>
       </section>
 
-      {/* Conteúdo principal */}
-      <section className="produtos-conteudo">
-
-        <div className="produtos-titulo">
-          <h2>Produtos em Estoque</h2>
-
-          <p>
-            Visualize e gerencie os produtos cadastrados no sistema.
-          </p>
+      <section className={styles["products-summary"]}>
+        <div className={styles["summary-card"]}>
+          <span>Total de produtos</span>
+          <strong>{produtos.length}</strong>
         </div>
-
-        {/* Resumo dos produtos */}
-        <div className="resumo-produtos">
-
-          <div className="card-produto">
-            <span>TOTAL DE PRODUTOS</span>
-            <strong>{produtos.length}</strong>
-          </div>
-
-          <div className="card-produto">
-            <span>CATEGORIAS</span>
-            <strong>{categorias.length}</strong>
-          </div>
-
-          <div className="card-produto">
-            <span>RESULTADOS</span>
-            <strong>{produtosFiltrados.length}</strong>
-          </div>
-
+        <div className={styles["summary-card"]}>
+          <span>Itens em estoque</span>
+          <strong>{totalEstoque}</strong>
         </div>
-
-        {/* Pesquisa e cadastro */}
-        <div className="produtos-acoes">
-
-          <input
-            type="text"
-            placeholder="Pesquisar produto pelo nome..."
-            value={busca}
-            onChange={(evento) => setBusca(evento.target.value)}
-          />
-
-          <button
-            className="botao-novo"
-            onClick={novoProduto}
-          >
-            + Novo Produto
-          </button>
-
+        <div className={styles["summary-card"]}>
+          <span>Categorias</span>
+          <strong>{categorias.length}</strong>
         </div>
+      </section>
 
-        {/* Mensagens */}
-        {mensagem && (
-          <div className="mensagem-sucesso">
-            {mensagem}
-            <button
-              type="button"
-              onClick={() => setMensagem("")}
-            >
-              ×
-            </button>
-          </div>
-        )}
+      {mostrarForm && (
+        <form className={styles["product-form"]} onSubmit={salvarProduto}>
+          <h2>{editando ? "Editar produto" : "Cadastrar produto"}</h2>
 
-        {erro && (
-          <div className="mensagem-erro">
-            {erro}
-            <button
-              type="button"
-              onClick={carregarDados}
-            >
-              Tentar novamente
-            </button>
-          </div>
-        )}
-
-        {/* Formulário */}
-        {mostrarFormulario && (
-          <form
-            className="produto-formulario"
-            onSubmit={salvarProduto}
-          >
-
-            <h3>
-              {produtoEditando
-                ? "Editar Produto"
-                : "Cadastrar Novo Produto"}
-            </h3>
-
-            <div className="campo-formulario">
-              <label>Nome do produto *</label>
-
+          <div className={styles["form-grid"]}>
+            <label>
+              Nome do produto
               <input
-                type="text"
                 name="nome"
-                placeholder="Digite o nome do produto"
-                value={formulario.nome}
-                onChange={atualizarFormulario}
-                maxLength={100}
+                value={form.nome}
+                onChange={alterarCampo}
                 required
+                maxLength={100}
+                placeholder="Digite o nome"
               />
-            </div>
+            </label>
 
-            <div className="campo-formulario">
-              <label>Descrição</label>
-
-              <textarea
-                name="descricao"
-                placeholder="Descreva o produto..."
-                value={formulario.descricao}
-                onChange={atualizarFormulario}
+            <label>
+              Preço (R$)
+              <input
+                name="preco"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={form.preco}
+                onChange={alterarCampo}
+                required
+                placeholder="0,00"
               />
-            </div>
+            </label>
 
-            <div className="formulario-linha">
+            <label>
+              Quantidade em estoque
+              <input
+                name="quantidade_estoque"
+                type="number"
+                min="0"
+                step="1"
+                value={form.quantidade_estoque}
+                onChange={alterarCampo}
+                placeholder="0"
+              />
+            </label>
 
-              <div className="campo-formulario">
-                <label>Preço (R$) *</label>
-
-                <input
-                  type="number"
-                  name="preco"
-                  placeholder="0,00"
-                  min="0.01"
-                  step="0.01"
-                  value={formulario.preco}
-                  onChange={atualizarFormulario}
-                  required
-                />
-              </div>
-
-              <div className="campo-formulario">
-                <label>Quantidade em estoque</label>
-
-                <input
-                  type="number"
-                  name="quantidade_estoque"
-                  min="0"
-                  step="1"
-                  value={formulario.quantidade_estoque}
-                  onChange={atualizarFormulario}
-                />
-              </div>
-
-            </div>
-
-            <div className="campo-formulario">
-              <label>Categoria</label>
-
+            <label>
+              Categoria
               <select
                 name="categoria_id"
-                value={formulario.categoria_id}
-                onChange={atualizarFormulario}
+                value={form.categoria_id}
+                onChange={alterarCampo}
               >
                 <option value="">Sem categoria</option>
-
                 {categorias.map((categoria) => (
-                  <option
-                    key={categoria.id}
-                    value={categoria.id}
-                  >
+                  <option key={categoria.id} value={categoria.id}>
                     {categoria.nome}
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
 
-            <div className="formulario-botoes">
+            <label className={styles["form-description"]}>
+              Descrição
+              <textarea
+                name="descricao"
+                value={form.descricao}
+                onChange={alterarCampo}
+                placeholder="Descrição do produto"
+                rows={3}
+              />
+            </label>
+          </div>
 
-              <button
-                type="submit"
-                className="botao-salvar"
-              >
-                Salvar Produto
-              </button>
+          <div className={styles["form-actions"]}>
+            <button
+              type="button"
+              className={styles["product-cancel"]}
+              onClick={() => setMostrarForm(false)}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className={styles["product-save"]}>
+              Salvar produto
+            </button>
+          </div>
+        </form>
+      )}
 
-              <button
-                type="button"
-                className="botao-cancelar"
-                onClick={limparFormulario}
-              >
-                Cancelar
-              </button>
+      {erro && <p className={styles["products-error"]}>{erro}</p>}
 
-            </div>
+      <section className={styles["products-list"]}>
+        <div className={styles["products-list-heading"]}>
+          <div>
+            <h2>Lista de produtos</h2>
+            <p>{produtosFiltrados.length} produtos encontrados</p>
+          </div>
 
-          </form>
-        )}
-
-        {/* Tabela de produtos */}
-        <div className="tabela-titulo">
-          <h2>Lista de Produtos</h2>
+          <input
+            className={styles["product-search"]}
+            type="search"
+            placeholder="Buscar produto..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
         </div>
 
         {carregando ? (
-          <p className="mensagem-vazia">
-            Carregando produtos...
-          </p>
+          <p className={styles["products-message"]}>Carregando produtos...</p>
         ) : produtosFiltrados.length === 0 ? (
-          <p className="mensagem-vazia">
-            Nenhum produto encontrado.
-          </p>
+          <p className={styles["products-message"]}>Nenhum produto encontrado.</p>
         ) : (
-
-          <div className="tabela-responsiva">
-
-            <table className="tabela-produtos">
-
+          <div className={styles["products-table-wrapper"]}>
+            <table className={styles["products-table"]}>
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Produto</th>
-                  <th>Preço Unitário</th>
-                  <th>Quantidade</th>
                   <th>Categoria</th>
+                  <th>Preço</th>
+                  <th>Estoque</th>
                   <th>Ações</th>
                 </tr>
               </thead>
-
               <tbody>
-
                 {produtosFiltrados.map((produto) => (
-
                   <tr key={produto.id}>
-
-                    <td>{produto.id}</td>
-
-                    <td className="nome-produto">
-                      {produto.nome}
-                    </td>
-
+                    <td>#{produto.id}</td>
                     <td>
-                      {formatarPreco(produto.preco)}
+                      <strong>{produto.nome}</strong>
+                      <small>{produto.descricao || "Sem descrição"}</small>
                     </td>
-
+                    <td>{nomeCategoria(produto.categoria_id)}</td>
                     <td>
-                      {produto.quantidade_estoque ?? 0} un.
+                      {Number(produto.preco).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL"
+                      })}
                     </td>
-
                     <td>
-                      {nomeCategoria(produto.categoria_id)}
+                      <span className={styles["stock-badge"]}>
+                        {produto.quantidade_estoque ?? 0} un.
+                      </span>
                     </td>
-
-                    <td>
-                      <div className="acoes-tabela">
-
-                        <button
-                          className="botao-editar"
-                          onClick={() => editarProduto(produto)}
-                        >
-                          Editar
-                        </button>
-
-                        <button
-                          className="botao-excluir"
-                          onClick={() => excluirProduto(produto.id)}
-                        >
-                          Excluir
-                        </button>
-
-                      </div>
+                    <td className={styles["product-actions"]}>
+                      <button onClick={() => abrirEdicao(produto)}>Editar</button>
+                      <button onClick={() => excluirProduto(produto.id)}>Excluir</button>
                     </td>
-
                   </tr>
-
                 ))}
-
               </tbody>
-
             </table>
-
           </div>
-
         )}
-
       </section>
-
     </main>
+    </>
   );
 }
-
-export default Produtos;
-
