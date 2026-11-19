@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import styles from "./produtos.module.css";
+import styles from "./page.module.css";
 
 const API = "https://stock.dev.vilhena.ifro.edu.br/api";
 
