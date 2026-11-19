@@ -13,6 +13,7 @@ const formularioInicial = {
   quantidade_estoque: "",
   categoria_id: ""
 };
+//testeeee
 
 function extrairLista(dados) {
   if (Array.isArray(dados)) return dados;
